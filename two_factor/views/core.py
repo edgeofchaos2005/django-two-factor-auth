@@ -222,6 +222,7 @@ class SetupView(IdempotentSessionWizardView):
     idempotent_dict = {
         'yubikey': False,
     }
+    repeatable = False
 
     def get_method(self):
         method_data = self.storage.validated_step_data.get('method', {})
@@ -229,9 +230,9 @@ class SetupView(IdempotentSessionWizardView):
 
     def get(self, request, *args, **kwargs):
         """
-        Start the setup wizard. Redirect if already enabled.
+        Start the setup wizard. Redirect if already enabled, unless repeatable is set.
         """
-        if default_device(self.request.user):
+        if default_device(self.request.user) and not self.repeatable:
             return redirect(self.redirect_url)
         return super(SetupView, self).get(request, *args, **kwargs)
 
